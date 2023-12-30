@@ -1,0 +1,44 @@
+class PrintNumbers implements Runnable {
+    private int maxNumber;
+    private static int currentNumber = 1;
+    private static Object lock = new Object();
+
+    public PrintNumbers(int maxNumber) {
+        this.maxNumber = maxNumber;
+    }
+
+    @Override
+    public void run() {
+        while (currentNumber <= maxNumber) {
+            synchronized (lock) {
+               
+                if ((currentNumber % 2 == 0 && Thread.currentThread().getName().equals("EvenThread"))
+                        || (currentNumber % 2 != 0 && Thread.currentThread().getName().equals("OddThread"))) {
+                    System.out.println(Thread.currentThread().getName() + ": " + currentNumber);
+                    currentNumber++;
+                    lock.notify(); // Notify the other thread
+                } else {
+                    try {
+                        lock.wait(); 
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+}
+
+public class PrintNumbersUsingThreads {
+    public static void main(String[] args) {
+        int N = 10;
+
+ 
+        Thread oddThread = new Thread(new PrintNumbers(N), "OddThread");
+        Thread evenThread = new Thread(new PrintNumbers(N), "EvenThread");
+
+
+        oddThread.start();
+        evenThread.start();
+    }
+}
