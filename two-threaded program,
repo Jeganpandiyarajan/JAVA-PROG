@@ -1,0 +1,83 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class PrimeNumberFinder implements Runnable {
+    private List<Integer> primeNumbers;
+
+    public PrimeNumberFinder() {
+        this.primeNumbers = new ArrayList<>();
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Prime numbers from 0 to 10:");
+        for (int i = 0; i <= 10; i++) {
+            if (isPrime(i)) {
+                primeNumbers.add(i);
+            }
+        }
+        System.out.println(primeNumbers);
+    }
+
+    private boolean isPrime(int num) {
+        if (num < 2) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(num); i++) {
+            if (num % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+class PalindromeNumberFinder implements Runnable {
+    private List<Integer> palindromeNumbers;
+
+    public PalindromeNumberFinder() {
+        this.palindromeNumbers = new ArrayList<>();
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Palindrome numbers from 10 to 50:");
+        for (int i = 10; i <= 50; i++) {
+            if (isPalindrome(i)) {
+                palindromeNumbers.add(i);
+            }
+        }
+        System.out.println(palindromeNumbers);
+    }
+
+    private boolean isPalindrome(int num) {
+        int originalNum = num;
+        int reversedNum = 0;
+        while (num > 0) {
+            int digit = num % 10;
+            reversedNum = reversedNum * 10 + digit;
+            num /= 10;
+        }
+        return originalNum == reversedNum;
+    }
+}
+
+public class SequentialThreadExecution {
+    public static void main(String[] args) {
+        PrimeNumberFinder primeNumberFinder = new PrimeNumberFinder();
+        PalindromeNumberFinder palindromeNumberFinder = new PalindromeNumberFinder();
+
+        Thread primeThread = new Thread(primeNumberFinder);
+        Thread palindromeThread = new Thread(palindromeNumberFinder);
+
+        // Execute threads sequentially
+        primeThread.start();
+        try {
+            primeThread.join(); // Wait for primeThread to finish
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        palindromeThread.start();
+    }
+}
